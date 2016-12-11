@@ -65,7 +65,7 @@ gcloud beta pubsub subscriptions create echo --topic echo
 Test the `echo` subscription:
 
 ```
-gcloud beta pubsub subscriptions pull echo
+gcloud beta pubsub subscriptions pull echo --auto-ack
 ```
 
 ```
@@ -117,5 +117,23 @@ curl http://127.0.0.1:8080/pubsub -d 'Hello GKE!'
 Fetch a message from the echo subscription:
 
 ```
-gcloud beta pubsub subscriptions pull echo
+gcloud beta pubsub subscriptions pull echo --auto-ack
+```
+
+## Cleanup
+
+```
+kubectl delete secret echo
+```
+
+```
+kubectl delete rs echo
+```
+
+```
+gcloud beta pubsub subscriptions delete echo
+```
+
+```
+gcloud beta pubsub topics delete echo
 ```
