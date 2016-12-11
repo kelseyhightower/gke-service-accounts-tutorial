@@ -120,6 +120,14 @@ Fetch a message from the echo subscription:
 gcloud beta pubsub subscriptions pull echo --auto-ack
 ```
 
+```
+┌────────────┬────────────────┬────────────┐
+│    DATA    │   MESSAGE_ID   │ ATTRIBUTES │
+├────────────┼────────────────┼────────────┤
+│ Hello GKE! │ 50113017370438 │            │
+└────────────┴────────────────┴────────────┘
+```
+
 ## Cleanup
 
 ```
