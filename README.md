@@ -1,34 +1,32 @@
-# Google Container Engine (GKE) and Service Accounts
+# Google Cloud Service Accounts with Google Container Engine Tutorial
 
-Applications running in GKE have access to other GCP services such as Stack Drive Trace and Google PubSub. In order to access these services a service account can be used.
+Applications running on [Google Container Engine](https://cloud.google.com/container-engine) have access to other [Google Cloud Platform](https://cloud.google.com) services such as [Stackdriver Trace](https://cloud.google.com/trace) and [Cloud Pub/Sub](https://cloud.google.com/pubsub). In order to access these services a [Service Account](https://cloud.google.com/compute/docs/access/service-accounts) must be created and used by client applications.
+
+This tutorial will walk you through deploying the `echo` application which creates Pub/Sub messages from HTTP requests and sends trace data to Stackdriver Trace.  
 
 ## Create a Service Account
 
-The example application requires the following permissions:
+The `echo` application requires the following permissions:
 
-* The ability to publish messages to a Pubsub topic.
-* The ability to write trace data to StackDriver Trace.
+* The ability to publish messages to a pub/sub topic.
+* The ability to write trace data to Stackdriver Trace.
 
-Capture the GCP project ID:
+Create a service account for the `echo` application:
 
 ```
 export PROJECT_ID=$(gcloud config get-value core/project)
 ```
 
-Set the service account name:
-
 ```
-export SERVICE_ACCOUNT_NAME="service-account-example"
+export SERVICE_ACCOUNT_NAME="service-account-echo"
 ```
-
-Create the example service account:
 
 ```
 gcloud beta iam service-accounts create ${SERVICE_ACCOUNT_NAME} \
-  --display-name "Google Container Engine example service account"
+  --display-name "echo service account"
 ```
 
-Add the `pubsub.editor` and `cloudtrace.agent` IAM permissions:
+Add the `pubsub.editor` and `cloudtrace.agent` IAM permissions to the echo service account:
 
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
@@ -42,7 +40,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
   --role='roles/cloudtrace.agent'
 ```
 
-Generate and download the example service account configuration:
+### Generate and download the `echo` service account:
 
 ```
 gcloud beta iam service-accounts keys create \
@@ -50,15 +48,21 @@ gcloud beta iam service-accounts keys create \
   service-account.json
 ```
 
-### Setup Google PubSub
+## Setup Google Pub/Sub Topics and Subscriptions
+
+The `echo` application publishes messages to the `echo` topic. Create the `echo` topic:
 
 ```
 gcloud beta pubsub topics create echo
-``` 
+```
+
+Once messages have been pushed to the `echo` topic, they can be fetch using a subscription. Create the `echo` subscription:
 
 ```
 gcloud beta pubsub subscriptions create echo --topic echo
 ```
+
+Test the `echo` subscription:
 
 ```
 gcloud beta pubsub subscriptions pull echo
@@ -68,17 +72,33 @@ gcloud beta pubsub subscriptions pull echo
 Listed 0 items.
 ```
 
-### Kubernetes
+## Deploy to Google Container Engine
+
+The `echo` application needs access to the echo service account created earlier. Create a Kubernetes secret from the `service-account.json` file:
 
 ```
 kubectl create secret generic echo --from-file service-account.json
 ```
 
+Deploy the `echo` container image using a replicaset:
+
 ```
 kubectl create -f replicasets/echo.yaml
 ```
 
-In a seperate terminal create a proxy to the `echo` pod:
+At this point the `gcr.io/hightowerlabs/echo` container image should be running:
+
+```
+$ kubectl get pods
+```
+```
+NAME         READY     STATUS    RESTARTS   AGE
+echo-ur6e9   1/1       Running   0          10s
+```
+
+### Publishing Messages
+
+The `echo` service is now running in the cluster on a private IP address. In a seperate terminal create a proxy to the `echo` pod:
 
 ```
 kubectl port-forward \
@@ -86,7 +106,9 @@ kubectl port-forward \
   8080:8080
 ```
 
-Submit a request to the echo pod:
+At this point the `echo` service is available at `http://127.0.0.1:8080/pubsub`
+
+#### Submit a request to the echo service
 
 ```
 curl http://127.0.0.1:8080/pubsub -d 'Hello GKE!'
