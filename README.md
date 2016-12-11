@@ -132,7 +132,7 @@ gcloud beta pubsub subscriptions pull echo --auto-ack
 
 The `echo` application is configured to send 1 out of 10 request to Stackdriver. Once a trace has been submitted it will be viewable via the Stackdriver Trace dashboard.
 
-![Image of Stackdriver Trace Dashboard](https://github.com/kelseyhightower/gke-service-accounts-tutorial/stackdriver-trace.png)
+![Image of Stackdriver Trace Dashboard](stackdriver-trace.png)
 
 ## Cleanup
 
