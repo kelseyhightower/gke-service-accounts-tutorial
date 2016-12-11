@@ -137,3 +137,7 @@ gcloud beta pubsub subscriptions delete echo
 ```
 gcloud beta pubsub topics delete echo
 ```
+
+```
+gcloud beta iam service-accounts delete "${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+```
