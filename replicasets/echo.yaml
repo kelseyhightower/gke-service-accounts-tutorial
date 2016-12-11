@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: echo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echo
+      name: echo
+    spec:
+      containers:
+        - name: echo
+          image: "gcr.io/hightowerlabs/echo"
+          env:
+            - name: "GOOGLE_APPLICATION_CREDENTIALS"
+              value: "/var/run/secret/cloud.google.com/service-account.json"
+            - name: "PROJECT_ID"
+              value: "hightowerlabs"
+            - name: "TOPIC"
+              value: "echo"
+          volumeMounts:
+            - name: "service-account"
+              mountPath: "/var/run/secret/cloud.google.com"
+            - name: "certs"
+              mountPath: "/etc/ssl/certs"
+      volumes:
+        - name: "service-account"
+          secret:
+            secretName: "echo"
+        - name: "certs"
+          hostPath:
+            path: "/etc/ssl/certs"
