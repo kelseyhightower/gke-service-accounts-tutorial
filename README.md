@@ -22,7 +22,7 @@ export SERVICE_ACCOUNT_NAME="service-account-echo"
 ```
 
 ```
-gcloud beta iam service-accounts create ${SERVICE_ACCOUNT_NAME} \
+gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} \
   --display-name "echo service account"
 ```
 
@@ -43,7 +43,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 ### Generate and download the `echo` service account:
 
 ```
-gcloud beta iam service-accounts keys create \
+gcloud iam service-accounts keys create \
   --iam-account "${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
   service-account.json
 ```
@@ -53,19 +53,19 @@ gcloud beta iam service-accounts keys create \
 The `echo` application publishes messages to the `echo` topic. Create the `echo` topic:
 
 ```
-gcloud beta pubsub topics create echo
+gcloud pubsub topics create echo
 ```
 
 Once messages have been pushed to the `echo` topic, they can be fetch using a subscription. Create the `echo` subscription:
 
 ```
-gcloud beta pubsub subscriptions create echo --topic echo
+gcloud pubsub subscriptions create echo --topic echo
 ```
 
 Test the `echo` subscription:
 
 ```
-gcloud beta pubsub subscriptions pull echo --auto-ack
+gcloud pubsub subscriptions pull echo --auto-ack
 ```
 
 ```
@@ -117,18 +117,18 @@ curl http://127.0.0.1:8080/pubsub -d 'Hello GKE!'
 Fetch a message from the echo subscription:
 
 ```
-gcloud beta pubsub subscriptions pull echo --auto-ack
+gcloud pubsub subscriptions pull echo --auto-ack
 ```
 
 ```
 ┌────────────┬────────────────┬────────────┐
 │    DATA    │   MESSAGE_ID   │ ATTRIBUTES │
 ├────────────┼────────────────┼────────────┤
-│ Hello GKE! │ 50113017370438 │            │
+│ Hello GKE! │ 26699545805948 │            │
 └────────────┴────────────────┴────────────┘
 ```
 
-### Stackdriver Trace
+### Stckdriver Trace
 
 The `echo` application is configured to send 1 out of 10 request to Stackdriver. Once a trace has been submitted it will be viewable via the Stackdriver Trace dashboard.
 
@@ -145,13 +145,13 @@ kubectl delete rs echo
 ```
 
 ```
-gcloud beta pubsub subscriptions delete echo
+gcloud pubsub subscriptions delete echo
 ```
 
 ```
-gcloud beta pubsub topics delete echo
+gcloud pubsub topics delete echo
 ```
 
 ```
-gcloud beta iam service-accounts delete "${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+gcloud iam service-accounts delete "${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 ```
