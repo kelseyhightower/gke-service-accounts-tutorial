@@ -18,7 +18,7 @@ export PROJECT_ID=$(gcloud config get-value core/project)
 ```
 
 ```
-export SERVICE_ACCOUNT_NAME="service-account-echo"
+export SERVICE_ACCOUNT_NAME="echo-service-account"
 ```
 
 ```
@@ -77,23 +77,27 @@ Listed 0 items.
 The `echo` application needs access to the echo service account created earlier. Create a Kubernetes secret from the `service-account.json` file:
 
 ```
+kubectl create configmap echo --from-literal "project-id=${PROJECT_ID}"
+```
+
+```
 kubectl create secret generic echo --from-file service-account.json
 ```
 
 Deploy the `echo` container image using a replicaset:
 
 ```
-kubectl create -f replicasets/echo.yaml
+kubectl create -f deployments/echo.yaml
 ```
 
 At this point the `gcr.io/hightowerlabs/echo` container image should be running:
 
 ```
-$ kubectl get pods
+kubectl get pods
 ```
 ```
-NAME         READY     STATUS    RESTARTS   AGE
-echo-ur6e9   1/1       Running   0          10s
+NAME                    READY     STATUS    RESTARTS   AGE
+echo-6f5964c9fb-xh5zn   1/1       Running   0          1m
 ```
 
 ### Publishing Messages
@@ -137,11 +141,15 @@ The `echo` application is configured to send 1 out of 10 request to Stackdriver.
 ## Cleanup
 
 ```
+kubectl delete configmap echo
+```
+
+```
 kubectl delete secret echo
 ```
 
 ```
-kubectl delete rs echo
+kubectl delete deployment echo
 ```
 
 ```

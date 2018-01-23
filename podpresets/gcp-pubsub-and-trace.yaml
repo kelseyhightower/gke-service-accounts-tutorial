@@ -1,0 +1,30 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: gcp-pubsub-and-trace
+spec:
+  selector:
+    matchLabels:
+      app: echo
+  env:
+    - name: "GOOGLE_APPLICATION_CREDENTIALS"
+      value: "/var/run/secret/cloud.google.com/service-account.json"
+    - name: "PROJECT_ID"
+      valueFrom:
+        configMapKeyRef:
+          name: echo
+          key: project-id
+    - name: "TOPIC"
+      value: "echo"
+  volumeMounts:
+    - name: "service-account"
+      mountPath: "/var/run/secret/cloud.google.com"
+    - name: "certs"
+      mountPath: "/etc/ssl/certs"
+  volumes:
+    - name: "service-account"
+      secret:
+        secretName: "echo"
+    - name: "certs"
+      hostPath:
+        path: "/etc/ssl/certs"

@@ -51,9 +51,11 @@ func (ph *pubSubHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	childSpan.SetLabel("topic", ph.topic)
 
 	ctx := context.Background()
-	msgIDs, err := topic.Publish(ctx, &pubsub.Message{
+	res := topic.Publish(ctx, &pubsub.Message{
 		Data: data,
 	})
+
+	id, err := res.Get(ctx)
 
 	childSpan.Finish()
 
@@ -63,5 +65,5 @@ func (ph *pubSubHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Published a message with a message ID: %s\n", msgIDs[0])
+	log.Printf("Published a message with a message ID: %s\n", id)
 }
