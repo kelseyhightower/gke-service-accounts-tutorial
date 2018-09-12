@@ -132,7 +132,7 @@ gcloud pubsub subscriptions pull echo --auto-ack
 └────────────┴────────────────┴────────────┘
 ```
 
-### Stckdriver Trace
+### Stackdriver Trace
 
 The `echo` application is configured to send 1 out of 10 request to Stackdriver. Once a trace has been submitted it will be viewable via the Stackdriver Trace dashboard.
 
